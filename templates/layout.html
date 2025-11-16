@@ -8,7 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
  <nav class="navbar navbar-light bg-light">
@@ -22,17 +23,26 @@
       <li class="nav-item me-3">
         <a class="nav-link" href="{{ url_for('about')}}">About</a>
       </li>
-      <li class="nav-item me-3">
-        <a class="nav-link" href="{{ url_for('contact')}}">Contact</a>
-      </li>
     </ul>
 
-<ul class="navbar-nav ms-auto d-flex flex-row">
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('login')}}">
+<ul class="navbar-nav ms-auto d-flex align-items-center">
+  {% if current_user.is_authenticated %}
+      <li class="nav-item me-3 d-flex align-items-center">
+        <a class="nav-link d-flex align-items-center" href="{{ url_for('account') }}">
+          <i class="bi bi-person-circle me-1" style="font-size: 1.5rem;"></i>
+          {{ current_user.username }}
+        </a>
+      </li>
+      <li class="nav-item d-flex align-items-center">
+        <a class="nav-link d-flex align-items-center" href="{{ url_for('logout') }}">Logout</a>
+      </li>
+      {% else %}
+      <li class="nav-item d-flex align-items-center">
+        <a class="nav-link d-flex align-items-center" href="{{ url_for('login') }}">
           <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
         </a>
       </li>
+      {% endif %}
     </ul>
 <div class="alert alert-{{ category }}">
     {{ message }}

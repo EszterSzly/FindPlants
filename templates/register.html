@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="content-section">
-    <form method="POST" action="{{ url_for('register') }}" novalidate> <!--<form method="POST" action=" "> why is it not enough?-->
+    <form method="POST" action="{{ url_for('register') }}" novalidate> <!--instead of <form method="POST" action=" ">why no validation error messages?I thought they both just send the form to the same URL it came from.-->
         {{ form.hidden_tag() }}
         <fieldset class="mb-3">
             <legend class="border-bottom mb-4">Join Us</legend>

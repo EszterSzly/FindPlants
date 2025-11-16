@@ -1,5 +1,5 @@
 <div class="row">
-<div class="col-md-6">
+<div class="col-md-3">
 <div class="card mb-3 article-card">
   <img src="{{ url_for('static', filename='images/dandelion.jpg') }}" class="card-img-top dandelion-img" alt="dandelion picture"
   width="200" height="200">
@@ -11,7 +11,7 @@
 </div>
 </div>
 
-<div class="col-md-6">
+<div class="col-md-3">
 <div class="card mb-3 article-card">
   <img src="{{ url_for('static', filename='images/nettle.jpg') }}" class="card-img-top nettle-img" alt="nettle picture">
   <div class="card-body">
@@ -22,12 +22,22 @@
 </div>
 
 
-<div class="col-md-6">
+<div class="col-md-3">
 <div class="card mb-3 article-card">
   <img src="{{ url_for('static', filename='images/calendula.jpg') }}" class="card-img-top caledula-img" alt="calendula picture">
   <div class="card-body">
     <h5 class="card-title">{{posts[2].title}}</h5>
     <p class="card-text">{{posts[2].content}}</p>
+  </div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card mb-3 article-card">
+  <img src="{{ url_for('static', filename='images/elderflower.jpg') }}" class="card-img-top elderflower-img" alt="elderflower picture">
+  <div class="card-body">
+    <h5 class="card-title">{{posts[3].title}}</h5>
+    <p class="card-text">{{posts[3].content}}</p>
   </div>
 </div>
 </div>

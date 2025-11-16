@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Search results for "{{query}}"</h2>
+    <hr>
+
+    {%if plants%}
+     <div class="row">
+        {% for plant in plants %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 plant-card">
+                <img src="{{ url_for('static', filename='images/' + plant.image_file) }}"
+                     class="card-img-top" alt="{{ plant.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ plant.name }}</h5>
+                    <p class="card-text"><em> {{ plant.latin_name }}</em></p>
+                    <p class="card-text">{{ plant.description }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+      {% else %}
+        <p>No plants found matching your search.</p>
+      {% endif %}
+</div>
+{% endblock %}
+
+
+
+
+
+
+            
+     
+         
+     
