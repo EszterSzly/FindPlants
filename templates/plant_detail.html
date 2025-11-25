@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container mt-4 text-center">
+
+    <h1 class="plant-title">{{ plant.name }}</h1>
+    <p class="latin-name">{{ plant.latin_name }}</p>
+
+
+   
+    {% if plant.image_file %}
+    <div>
+       <img src="{{ url_for('static', filename='images/' +plant.image_file)}}"
+            class="plant-img"
+            alt="{{ plant.name }}">
+    </div>
+    {% endif %}
+
+    <div class="save-btn-wrapper">
+   {% if plant in current_user.saved %}
+      <form action="{{ url_for('unsave_plant', plant_id=plant.id) }}" method="POST">
+         <button class="btn btn-save">Unsave</button>
+      </form>
+   {% else %}
+      <form action="{{ url_for('save_plant', plant_id=plant.id) }}" method="POST">
+         <button class="btn btn-save">Save Plant</button>
+     </form>
+   {% endif %}
+    </div>
+
+    <div class="description-box">
+        <p>{{ plant.description }}</p>
+    </div>
+
+        <h4 class="section-title">Add Comment</h4>
+
+        <form method="POST" class="comment-form">
+            <textarea name="text" placeholder="Your Comment" class="form-control mb-2" required></textarea>
+            <button type="submit" 
+                    class="btn btn-save mt-2">
+                    Submit Comment</button>
+        </form>
+
+        <h4 class="section-title">Comments</h4>
+
+    {% if plant.comments %}
+        <ul class="comment-list">
+            {% for comment in plant.comments %}
+           <li class="comment-item">
+            <div>
+               <strong>{{ comment.author.username }}:</strong>
+               {{ comment.text }}
+            </div>
+
+            {% if comment.author.id == current_user.id %}
+            <form method="POST"
+                  action="{{ url_for('delete_comment', comment_id=comment.id) }}">
+                <button class="btn btn-delete">Delete</button>
+                </form>
+          {% endif %}
+           </li>
+           {% endfor %}
+        </ul>
+        {% else %}
+           <p class="no-comments">No Comments Yet</p>
+        {% endif %}
+
+</div>
+
+{% endblock %}

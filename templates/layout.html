@@ -12,7 +12,7 @@
      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
- <nav class="navbar navbar-light bg-light">
+ <nav class="navbar navbar-light my-navbar">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">FindPlants</a>
 
@@ -59,8 +59,14 @@
     {% endfor %}
   {% endif %}
 {% endwith %}
-  <div class="container mt-4">
+  <div class="container mt-4 content-wrapper">
     {% block content %}{% endblock %}
   </div>
+  <footer class="bg-light text-center text-muted py-3 mt-5">
+  <div class="container">
+    <p class="mb-1">© 2025 FindPlants</p>
+    For any questions: <a href="mailto:findplants@example.org">findplants@example.org</a>
+  </div>
+</footer>
 </body>
 </html>

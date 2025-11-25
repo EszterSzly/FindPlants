@@ -1,22 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container mt-4">
-    <h2>Search results for "{{query}}"</h2>
-    <hr>
+
+    <h2 class="text-center">Search results for "{{query}}"</h2>
 
     {%if plants%}
-     <div class="row">
+     <div class="row mt-4">
+
         {% for plant in plants %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 plant-card">
+        <div class="col-md-3">
+
+            <a href="{{ url_for('plant_detail', plant_id=plant.id)}}" class="text-decoration-none text-dark">
+
+            <div class="card plant-card">
                 <img src="{{ url_for('static', filename='images/' + plant.image_file) }}"
-                     class="card-img-top" alt="{{ plant.name }}">
+                     alt="{{ plant.name }}">
+
                 <div class="card-body">
                     <h5 class="card-title">{{ plant.name }}</h5>
-                    <p class="card-text"><em> {{ plant.latin_name }}</em></p>
-                    <p class="card-text">{{ plant.description }}</p>
+                    <p class="card-text muted"> {{ plant.description[:120] }}</p>
                 </div>
             </div>
+            </a>
         </div>
         {% endfor %}
         </div>

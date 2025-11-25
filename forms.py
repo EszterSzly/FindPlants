@@ -20,10 +20,6 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Log in')
 
-class CommentForm(FlaskForm):
-    text = TextAreaField('Your Comment', validators=[DataRequired(), Length(min=1, max=500)])
-    submit = SubmitField ('Post Comment')
-
 
 
 

@@ -1,56 +1,30 @@
 from flask_bcrypt import Bcrypt
-from flask_login import login_user, UserMixin, logout_user,current_user,login_required
+from flask_login import login_user, logout_user,current_user,login_required
 from flask_login import LoginManager
-from datetime import datetime
-from flask import Flask, render_template, request, url_for, flash, redirect
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, abort, render_template, request, url_for, flash, redirect
 from forms import RegistrationForm, LoginForm
+from models import db, User, Comment,Plant
+from flask_login import login_required, current_user
+from flask_migrate import Migrate
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY']='24c20f22273ccbc827a9652c4db320bf'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-db = SQLAlchemy(app)
+
+
+db.init_app(app)
+migrate = Migrate(app, db)
+
 bcrypt = Bcrypt (app)
 login_manager = LoginManager(app)
 
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username= db.Column(db.String(20), unique=True, nullable=False)
-    email= db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60),nullable=False)
-
-    def __repr__(self):
-         return f"User('{self.username}','{self.email}','{self.password}')"
-    
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-class Comments(db.Model):
-     id = db.Column(db.Integer, primary_key=True)
-     text = db.Column(db.Text, nullable=False)
-     date_commented = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-     plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'), nullable=False)
 
-     def __repr__(self):
-        return f"Comments('{self.text[:30]}','{self.date_commented}')"
-
-
-class Plant(db.Model):
-    id=db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    latin_name= db.Column(db.String(120))
-    description = db.Column(db.Text, nullable=False)
-    image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
-    comments = db.relationship('Comments', backref='plant', lazy=True)
-
-    def __repr__(self):
-        return f"Plant('{self.name}','{self.latin_name}','{self.image_file}')"
-
-   
 
 
 
@@ -102,7 +76,9 @@ def register():
 def login():
     form=LoginForm()
     if form.validate_on_submit():
+
         user= User.query.filter_by(email=form.email.data).first()
+
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             flash('You have been logged in!', 'success')
@@ -121,6 +97,67 @@ def logout():
 @login_required
 def account():
     return render_template("account.html", title="My Account")
+
+@app.route("/plant/<int:plant_id>", methods=['GET', 'POST'])
+def plant_detail(plant_id):
+    plant=Plant.query.get_or_404(plant_id)
+
+    if request.method == "POST":
+        if not current_user.is_authenticated:
+            flash("Please log in to comment.","warning")
+            return redirect(url_for("login"))
+        
+        text = request.form.get("text")
+
+        if text:
+            new_comment = Comment(
+                text=text,
+                plant_id=plant.id,
+                user_id=current_user.id
+            )
+            
+            db.session.add(new_comment)
+            db.session.commit()
+
+        return redirect(url_for("plant_detail", plant_id=plant.id))
+    
+    return render_template("plant_detail.html", plant=plant)
+
+
+@app.route("/comment/<int:comment_id>/delete", methods=["POST"])
+@login_required
+def delete_comment(comment_id):
+    comment=Comment.query.get_or_404(comment_id)
+
+    if comment.author !=current_user:
+        abort(403)
+        
+    db.session.delete(comment)
+    db.session.commit()
+
+    return redirect(url_for("plant_detail", plant_id=comment.plant_id))
+
+@app.route("/save/<int:plant_id>", methods=["POST"])
+@login_required
+def save_plant(plant_id):
+    plant=Plant.query.get_or_404(plant_id)
+
+    if plant not in current_user.saved:
+        current_user.saved.append(plant)
+        db.session.commit()
+
+    return redirect(url_for("plant_detail", plant_id=plant_id))
+
+@app.route("/unsave/<int:plant_id>", methods=["POST"])
+@login_required
+def unsave_plant(plant_id):
+    plant=Plant.query.get_or_404(plant_id)
+
+    if plant in current_user.saved:
+        current_user.saved.remove(plant)
+        db.session.commit()
+
+    return redirect(url_for("plant_detail", plant_id=plant_id))
 
 
 if __name__ == '__main__':
