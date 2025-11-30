@@ -1,80 +1,51 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="content-section">
-    <form method="POST" action="{{ url_for('register') }}" novalidate> <!--instead of <form method="POST" action=" ">why no validation error messages?I thought they both just send the form to the same URL it came from.-->
-        {{ form.hidden_tag() }}
-        <fieldset class="mb-3">
-            <legend class="border-bottom mb-4">Join Us</legend>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="shadow-sm rounded-4 p-4"
+         style="width: 100%; max-width: 400px; background: #f7faf8; border: 1px solid #e0e8e2;">
+        
+        <h3 class="fw-bold mb-4 text-center" style="color:#2f4f4f;">
+            Create Account 🌱
+        </h3>
+
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
 
             <div class="mb-3">
-                {{ form.username.label(class="form-label") }}
-                {% if form.username.errors %}
-                    {{ form.username(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.username.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.username(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-  
-            <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {% if form.email.errors %}
-                    {{ form.email(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.email.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.email(class="form-control form-control-lg") }}
-                {% endif %}
+                {{ form.username.label(class="form-label fw-semibold", style="color:#3a5640") }}
+                {{ form.username(class="form-control rounded-3") }}
             </div>
 
-            
             <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {% if form.password.errors %}
-                    {{ form.password(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.password.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.password(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-    
-            <div class="mb-3">
-                {{ form.confirm_password.label(class="form-label") }}
-                {% if form.confirm_password.errors %}
-                    {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.confirm_password.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.confirm_password(class="form-control form-control-lg") }}
-                {% endif %}
+                {{ form.email.label(class="form-label fw-semibold", style="color:#3a5640") }}
+                {{ form.email(class="form-control rounded-3") }}
             </div>
 
-        </fieldset>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label fw-semibold", style="color:#3a5640") }}
+                {{ form.password(class="form-control rounded-3") }}
+            </div>
 
-        <div class="mb-3">
-            {{ form.submit(class="btn btn-pastell") }}
-        </div>
-    </form>
+            <div class="mb-3">
+                {{ form.confirm_password.label(class="form-label fw-semibold", style="color:#3a5640") }}
+                {{ form.confirm_password(class="form-control rounded-3") }}
+            </div>
+
+            <button class="btn w-100 rounded-pill mt-3"
+                    style="background:#7ea890; color:white;">
+                Register
+            </button>
+
+        </form>
+
+        <p class="text-center text-muted mt-3" style="font-size:0.9rem;">
+            Already have an account? 
+            <a href="{{ url_for('login') }}" style="color:#4c6b57;">Log in</a>
+        </p>
+
+    </div>
 </div>
 
-<div class="border-top pt-3">
-    <small class="text-muted">
-        Already Have An Account? 
-        <a class="ml-2" href="{{ url_for('login') }}">Sign In</a>
-    </small>
-</div>
 {% endblock %}

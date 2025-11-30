@@ -3,6 +3,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 
+
 db=SQLAlchemy()
 
 saved_plants = db.Table(
@@ -29,6 +30,7 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
          return f"User('{self.username}','{self.email}','{self.password}')"
+    
 class Comment(db.Model):
      id = db.Column(db.Integer, primary_key=True)
      text = db.Column(db.Text, nullable=False)
@@ -40,16 +42,36 @@ class Comment(db.Model):
      def __repr__(self):
         return f"Comment('{self.text[:30]}','{self.date_commented}')"
 
-
 class Plant(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     latin_name= db.Column(db.String(120))
     description = db.Column(db.Text, nullable=False)
     image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
+
     comments = db.relationship('Comment', backref='plant', lazy=True)
+
+
+    locations = db.relationship('Location', backref='plant', lazy=True)
 
     def __repr__(self):
         return f"Plant('{self.name}','{self.latin_name}','{self.image_file}')"
+    
+class Location(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'), nullable=False)
+    
+    def as_dict(self):
+        return {
+            "latitude": self.latitude,
+            "longitude": self.longitude
+        }
+
+
+    def __repr__(self):
+        return f"Location(lat={self.latitude}, lng={self.longitude})"
+
 
    

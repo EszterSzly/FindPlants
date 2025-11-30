@@ -6,25 +6,58 @@
     <h1 class="plant-title">{{ plant.name }}</h1>
     <p class="latin-name">{{ plant.latin_name }}</p>
 
-
-   
-    {% if plant.image_file %}
+{% if plant.image_file %}
     <div>
        <img src="{{ url_for('static', filename='images/' +plant.image_file)}}"
             class="plant-img"
             alt="{{ plant.name }}">
     </div>
-    {% endif %}
+{% endif %}
+ 
+    <h4>Locations</h4>
 
-    <div class="save-btn-wrapper">
+   <div id="map" style="height:400px; width:100%; border-radius:12px;"></div>
+
+   <script id="locations-data" type="application/json">
+        {{ locations | tojson }}
+   </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}"></script>
+   <script>
+   document.addEventListener("DOMContentLoaded", function() {
+
+    let locationsTag = document.getElementById("locations-data");
+    let locations = JSON.parse(locationsTag.textContent || "[]");
+
+    console.log("Locations loaded:", locations);
+
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 5,
+        center: { lat: 52.52, lng: 13.405 }
+    });
+
+    locations.forEach(loc => {
+        new google.maps.Marker({
+            position: { 
+                lat: Number(loc.latitude), 
+                lng: Number(loc.longitude) 
+            },
+            map: map
+        });
+    });
+
+});
+</script>
+
+<div class="save-btn-wrapper">
    {% if plant in current_user.saved %}
-      <form action="{{ url_for('unsave_plant', plant_id=plant.id) }}" method="POST">
+   <form action="{{ url_for('unsave_plant', plant_id=plant.id) }}" method="POST">
          <button class="btn btn-save">Unsave</button>
-      </form>
+   </form>
    {% else %}
-      <form action="{{ url_for('save_plant', plant_id=plant.id) }}" method="POST">
+   <form action="{{ url_for('save_plant', plant_id=plant.id) }}" method="POST">
          <button class="btn btn-save">Save Plant</button>
-     </form>
+   </form>
    {% endif %}
     </div>
 
@@ -64,7 +97,8 @@
         {% else %}
            <p class="no-comments">No Comments Yet</p>
         {% endif %}
-
 </div>
+
+
 
 {% endblock %}

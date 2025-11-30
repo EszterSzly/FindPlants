@@ -1,17 +1,27 @@
-from flask_bcrypt import Bcrypt
-from flask_login import login_user, logout_user,current_user,login_required
-from flask_login import LoginManager
 from flask import Flask, abort, render_template, request, url_for, flash, redirect
-from forms import RegistrationForm, LoginForm
-from models import db, User, Comment,Plant
-from flask_login import login_required, current_user
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager,login_user, logout_user,current_user,login_required
 from flask_migrate import Migrate
 
+from forms import RegistrationForm, LoginForm
+from models import db, User, Comment,Plant, Location
+from flask_mailman import Mail
+from itsdangerous import URLSafeTimedSerializer
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY']='24c20f22273ccbc827a9652c4db320bf'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config["MAIL_BACKEND"] = "console"
+
+mail= Mail(app)
+
+serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -24,7 +34,25 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+def send_reset_email(user):
+    token = serializer.dumps(user.email, salt='password-reset-salt')
 
+    reset_url = url_for('reset_token', token=token, _external=True)
+
+    subject = "Reset your password"
+    message = f"""
+    To reset your password, visit the following link:
+    {reset_url}
+
+    If you did not request this, simply ignore this email.
+    """
+
+    mail.send_mail(
+        subject=subject,
+        message=message,
+        from_email= "noreply@findplants.com",
+        recipient_list=[user.email]
+    )
 
 
 
@@ -101,6 +129,7 @@ def account():
 @app.route("/plant/<int:plant_id>", methods=['GET', 'POST'])
 def plant_detail(plant_id):
     plant=Plant.query.get_or_404(plant_id)
+    google_maps_key = os.getenv("GOOGLE_MAPS_API_KEY")
 
     if request.method == "POST":
         if not current_user.is_authenticated:
@@ -121,7 +150,15 @@ def plant_detail(plant_id):
 
         return redirect(url_for("plant_detail", plant_id=plant.id))
     
-    return render_template("plant_detail.html", plant=plant)
+    return render_template(
+        "plant_detail.html",
+        plant=plant,
+        locations=[
+            {"latitude": l.latitude, "longitude": l.longitude}
+            for l in plant.locations
+        ],
+     google_maps_key=google_maps_key
+    )
 
 
 @app.route("/comment/<int:comment_id>/delete", methods=["POST"])
@@ -158,6 +195,41 @@ def unsave_plant(plant_id):
         db.session.commit()
 
     return redirect(url_for("plant_detail", plant_id=plant_id))
+
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_token(token):
+    try:
+        email = serializer.loads(token, salt='password-reset-salt', max_age=3600)
+    except:
+        flash("The link is invalid or expired.", "warning")
+        return redirect(url_for("forgot_password"))
+
+    user = User.query.filter_by(email=email).first()
+
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        hashed_pw = bcrypt.generate_password_hash(new_password).decode("utf-8")
+        user.password = hashed_pw
+        db.session.commit()
+        flash("Your password has been updated!", "success")
+        return redirect(url_for("login"))
+
+    return render_template("reset_password.html")
+
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            send_reset_email(user)
+
+        flash("If an account with that email exists, a reset link has been sent.", "info")
+        return redirect(url_for("login"))
+
+    return render_template("forgot_password.html")
+
 
 
 if __name__ == '__main__':
