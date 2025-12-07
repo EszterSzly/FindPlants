@@ -11,7 +11,7 @@ Features:
 
 -Display plant locations using Google Maps
 
--User login and ability to save favorite plants
+-User login and the ability to save and comment on plants
 
 -Responsive design for mobile and desktop
 
