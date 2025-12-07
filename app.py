@@ -14,10 +14,12 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+app.config['SECRET_KEY'] = "ecb37f3c46e781ff019f3aa16ff886300d04c74c89c999db169e41937477e7b6"
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config["MAIL_BACKEND"] = "console"
+
 
 mail= Mail(app)
 
@@ -28,6 +30,13 @@ migrate = Migrate(app, db)
 
 bcrypt = Bcrypt (app)
 login_manager = LoginManager(app)
+
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'warning'
+
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -72,12 +81,15 @@ def index():
 
 @app.route('/search')
 def search():
-    query = request.args.get('query')  # for the searched word
-    # later db or api
+    query = request.args.get('query')  
+
     if not query:
-        return render_template('search.html', plants=[])
+        return render_template('search.html', plants=[], query=query)
     
-    results = Plant.query.filter(Plant.name.ilike(f"%{query}%")).all()
+    results = Plant.query.filter(
+        (Plant.name.ilike(f"%{query}%")) |
+        (Plant.description.ilike(f"%{query}%"))
+        ).all()
 
     return render_template('search.html', plants=results, query=query)
 
@@ -113,6 +125,8 @@ def login():
             return redirect(url_for('index'))
         else:
             flash('Login unsuccesful. Please check username and password', 'danger')
+            return redirect(url_for('login'))
+
     return render_template('login.html', title='Log in', form=form)
 
 @app.route("/logout")
@@ -130,6 +144,7 @@ def account():
 def plant_detail(plant_id):
     plant=Plant.query.get_or_404(plant_id)
     google_maps_key = os.getenv("GOOGLE_MAPS_API_KEY")
+
 
     if request.method == "POST":
         if not current_user.is_authenticated:

@@ -16,18 +16,17 @@
  <nav class="navbar navbar-expand-lg navbar-light my-navbar">
   <div class="container-fluid">
 
-    <!-- Logo -->
     <a class="navbar-brand" href="/">FindPlants</a>
 
-    <!-- Hamburger Menu Button -->
+  
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Menu Items -->
+   
     <div class="collapse navbar-collapse" id="mainNavbar">
 
-      <!-- Left Items -->
+     
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item me-3">
           <a class="nav-link" href="/">Home</a>
@@ -37,7 +36,6 @@
         </li>
       </ul>
 
-      <!-- Right Items -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
         {% if current_user.is_authenticated %}
@@ -66,6 +64,9 @@
   </div>
 </nav>
 
+
+
+<div class="container mt-3">
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     {% for category, message in messages %}
@@ -76,6 +77,8 @@
     {% endfor %}
   {% endif %}
 {% endwith %}
+</div>
+
   <div class="container mt-4 content-wrapper">
     {% block content %}{% endblock %}
   </div>

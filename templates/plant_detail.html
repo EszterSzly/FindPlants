@@ -14,13 +14,15 @@
     </div>
 {% endif %}
  
-    <h4>Locations</h4>
+     <h4>Locations</h4>
 
-   <div id="map" style="height:400px; width:100%; border-radius:12px;"></div>
+    <div class="map-wrapper">
+        <div id="map"></div>
+    </div>
 
-   <script id="locations-data" type="application/json">
+    <script id="locations-data" type="application/json">
         {{ locations | tojson }}
-   </script>
+    </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}"></script>
    <script>

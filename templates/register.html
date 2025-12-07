@@ -9,35 +9,51 @@
             Create Account 🌱
         </h3>
 
-        <form method="POST">
+        <form method="POST" novalidate>
 
             {{ form.hidden_tag() }}
 
             <div class="mb-3">
                 {{ form.username.label(class="form-label fw-semibold", style="color:#3a5640") }}
                 {{ form.username(class="form-control rounded-3") }}
+
+                {% for error in form.username.errors %}
+                    <div class="text-success small">{{ error }}</div>
+                {% endfor %}
+
             </div>
 
             <div class="mb-3">
                 {{ form.email.label(class="form-label fw-semibold", style="color:#3a5640") }}
                 {{ form.email(class="form-control rounded-3") }}
+
+                {% for error in form.email.errors %}
+                    <div class="text-success small">{{ error }}</div>
+                {% endfor %}
             </div>
 
             <div class="mb-3">
                 {{ form.password.label(class="form-label fw-semibold", style="color:#3a5640") }}
                 {{ form.password(class="form-control rounded-3") }}
+
+                {% for error in form.password.errors %}
+                    <div class="text-success small">{{ error }}</div>
+                {% endfor %}
             </div>
 
             <div class="mb-3">
                 {{ form.confirm_password.label(class="form-label fw-semibold", style="color:#3a5640") }}
                 {{ form.confirm_password(class="form-control rounded-3") }}
+
+                {% for error in form.confirm_password.errors %}
+                    <div class="text-success small">{{ error }}</div>
+                {% endfor %}
+
             </div>
 
-            <button class="btn w-100 rounded-pill mt-3"
-                    style="background:#7ea890; color:white;">
+            <button type="submit" class="btn w-100 rounded-pill mt-3" style="background:#7ea890; color:white;">
                 Register
             </button>
-
         </form>
 
         <p class="text-center text-muted mt-3" style="font-size:0.9rem;">

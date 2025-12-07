@@ -1,19 +1,19 @@
 .btn-pastell {
     background-color: #fbfbfb;  
-    color: #04060a;             /* Textfarbe */
+    color: #04060a;             
     border: none;
 }
 
 .btn-pastell:hover {
-    background-color: #a5a9a7; /* Farbe beim Hover */
+    background-color: #a5a9a7; 
 }
 
 .btn-pastell:active {
-    background-color: #919694;  /* Farbe beim Klicken */
+    background-color: #919694; 
 }
 
 .btn-pastell:focus {
-    box-shadow: none;           /* Focus-Ring aus */
+    box-shadow: none;        
 }
 
 .plant-card {
@@ -261,7 +261,6 @@ body {
     padding-right: 10px;
   }
 
-  /* Entfernt Desktop-Spacing */
   .navbar .nav-item + .nav-item {
     margin-left: 0 !important;
   }
@@ -276,6 +275,27 @@ body {
       padding-top: 15px;
   }
 }
+#map {
+    width: 100%;
+    height: 300px;
+}
 
+@media (min-width: 600px) {
+    #map {
+        height: 400px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+::placeholder {
+    font-size: 16px;
+}
+
+
+@media (max-width: 480px) {
+    ::placeholder {
+        font-size: 14px;
+    }
+}
 
 
